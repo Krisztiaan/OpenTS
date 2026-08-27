@@ -68,6 +68,15 @@ jobs:
       - name: Build
         run: cmake --build build --config ${{ matrix.configuration }}
 
+      - name: Package AddressSanitizer runtime
+        if: matrix.configuration == 'Debug'
+        shell: pwsh
+        run: |
+          $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $install = & $vswhere -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath
+          $runtime = Get-ChildItem "$install\VC\Tools\MSVC\*\bin\Hostx64\x86\clang_rt.asan_dynamic-i386.dll" | Sort-Object FullName | Select-Object -Last 1
+          Copy-Item $runtime.FullName artifact
+
       - name: Test
         run: ctest --test-dir build -C ${{ matrix.configuration }} --output-on-failure
 
