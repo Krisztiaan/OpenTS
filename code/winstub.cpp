@@ -394,18 +394,13 @@ LRESULT CALLBACK /*_export*/ Windows_Procedure(HWND hwnd, UINT message, UINT wPa
 }
 
 
-/// <summary>
-/// Describes a Win32 window for the renderer without exposing Win32 types to it.
-/// </summary>
 NativeWindow Win_Native_Window(HWND window)
 {
-	return({ nullptr, window, NativeWindowType::Default });
+	return(NativeWindow{ nullptr, window });
 }
 
 
-/// <summary>
-/// Fetches the drawable dimensions of a per-monitor DPI-aware Win32 window.
-/// </summary>
+// Client dimensions are physical pixels because the process is per-monitor DPI aware.
 bool Win_Window_Drawable_Size(HWND window, int & width, int & height)
 {
 	RECT client;
@@ -419,9 +414,6 @@ bool Win_Window_Drawable_Size(HWND window, int & width, int & height)
 }
 
 
-/// <summary>
-/// Fetches the refresh rate of the display carrying a Win32 window.
-/// </summary>
 int Win_Window_Refresh_Rate(HWND window)
 {
 	int refreshrate = 0;
