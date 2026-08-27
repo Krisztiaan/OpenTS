@@ -104,12 +104,12 @@ set(OPENTS_COMPILE_OPTIONS
         # /arch:SSE2 -- IEEE-754 single precision, no x87 excess precision.
         # /fp:precise -- no reassociation of the engine's accumulations.
         $<$<COMPILE_LANGUAGE:CXX>:
-            /Zi /Od /RTC1 /GR /MP /EHsc /Oy- /MTd /Zc:__cplusplus /arch:SSE2 /fp:precise
+            /Zi /Od /fsanitize=address /GR /MP /EHsc /Oy- /MTd /Zc:__cplusplus /arch:SSE2 /fp:precise
         >
 
         # ---------- C ----------
         $<$<COMPILE_LANGUAGE:C>:
-            /Zi /Od /RTC1 /MP /Oy- /arch:SSE2 /fp:precise
+            /Zi /Od /fsanitize=address /MP /Oy- /arch:SSE2 /fp:precise
         >
 
         # ---------- MASM ----------
@@ -224,6 +224,7 @@ if (MSVC)
     target_link_options(OpenTS PRIVATE
         /SUBSYSTEM:WINDOWS
         /DEBUG
+        $<$<CONFIG:Debug>:/INCREMENTAL:NO>
         /MAP
         # Raises the user address space from 2GB to 4GB under 64-bit Windows. Pointers may
         # then have the high bit set, so anything holding one in a signed integer must only
