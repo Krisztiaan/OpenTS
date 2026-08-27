@@ -104,7 +104,7 @@ set(OPENTS_COMPILE_OPTIONS
         # /arch:SSE2 -- IEEE-754 single precision, no x87 excess precision.
         # /fp:precise -- no reassociation of the engine's accumulations.
         $<$<COMPILE_LANGUAGE:CXX>:
-            /Zi /Od /fsanitize=address /GR /MP /EHsc /Oy- /MTd /Zc:__cplusplus /arch:SSE2 /fp:precise
+            /Zi /Od /fsanitize=address /D_DISABLE_VECTOR_ANNOTATION /D_DISABLE_STRING_ANNOTATION /GR /MP /EHsc /Oy- /MTd /Zc:__cplusplus /arch:SSE2 /fp:precise
         >
 
         # ---------- C ----------
