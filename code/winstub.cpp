@@ -64,6 +64,7 @@
 #include "movie.h"
 #include "movies.h"
 #include "msgroute.h"
+#include "nativewindow.hh"
 #include "pcx.h"
 #include "resource.h"
 #include "theme.h"
@@ -273,7 +274,7 @@ LRESULT CALLBACK /*_export*/ Windows_Procedure(HWND hwnd, UINT message, UINT wPa
 
 		case WM_SIZE:
 			if (wParam != SIZE_MINIMIZED) {
-				Video_On_Resize(LOWORD(lParam), HIWORD(lParam));
+				Video_On_Resize(LOWORD(lParam), HIWORD(lParam), Win_Window_Refresh_Rate(hwnd));
 				if (MouseCursor != NULL) {
 					((WWMouseClass *)MouseCursor)->Calc_Confining_Rect();
 				}
@@ -281,7 +282,7 @@ LRESULT CALLBACK /*_export*/ Windows_Procedure(HWND hwnd, UINT message, UINT wPa
 			break;
 
 		case WM_DISPLAYCHANGE:
-			Video_On_Display_Change();
+			Video_On_Display_Change(Win_Window_Refresh_Rate(hwnd));
 			break;
 
 		case WM_CLOSE:
@@ -390,6 +391,48 @@ LRESULT CALLBACK /*_export*/ Windows_Procedure(HWND hwnd, UINT message, UINT wPa
 	}
 
 	return(DefWindowProc (hwnd, message, wParam, lParam));
+}
+
+
+/// <summary>
+/// Describes a Win32 window for the renderer without exposing Win32 types to it.
+/// </summary>
+NativeWindow Win_Native_Window(HWND window)
+{
+	return({ nullptr, window, NativeWindowType::Default });
+}
+
+
+/// <summary>
+/// Fetches the drawable dimensions of a per-monitor DPI-aware Win32 window.
+/// </summary>
+bool Win_Window_Drawable_Size(HWND window, int & width, int & height)
+{
+	RECT client;
+	if (window == NULL || !GetClientRect(window, &client)) {
+		return(false);
+	}
+
+	width = client.right - client.left;
+	height = client.bottom - client.top;
+	return(width > 0 && height > 0);
+}
+
+
+/// <summary>
+/// Fetches the refresh rate of the display carrying a Win32 window.
+/// </summary>
+int Win_Window_Refresh_Rate(HWND window)
+{
+	int refreshrate = 0;
+	HDC dc = GetDC(window);
+
+	if (dc != NULL) {
+		refreshrate = GetDeviceCaps(dc, VREFRESH);
+		ReleaseDC(window, dc);
+	}
+
+	return(refreshrate);
 }
 
 

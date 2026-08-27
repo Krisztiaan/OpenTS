@@ -26,6 +26,7 @@
 #include "language\language.h"
 #include "misc.h"
 #include "video.h"
+#include "winstub.h"
 #include "mixfile.h"
 #include "msgbox.h"
 #include "newmenu.h"
@@ -194,7 +195,7 @@ bool Change_Display_Mode(int width, int height)
 
 	Hide_Mouse();
 
-	if (!Video_Set_Mode(width, height)) {
+	if (!Video_Set_Mode(width, height, Win_Window_Refresh_Rate(MainWindow))) {
 		DebugString("Video_Set_Mode failed.\n");
 		Show_Mouse();
 		return(false);
