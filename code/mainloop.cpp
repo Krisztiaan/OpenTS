@@ -33,6 +33,7 @@
 #include "dialog.h"
 #include "dsaudio.h"
 #include "dsurface.h"
+#include "except.h"
 #include "fog.h"
 #include "globals.h"
 #include "goptions.h"
@@ -198,6 +199,28 @@ bool Main_Loop(void)
 	//Mono_Set_Cursor(0,0);
 
 	if (!GameActive) {return(!GameActive);}
+
+#ifdef _DEBUG
+	static bool overlay_watch_attempted = false;
+	if (!overlay_watch_attempted) {
+		overlay_watch_attempted = true;
+
+		char watch_cell[32];
+		int x = 0;
+		int y = 0;
+		DWORD const watch_cell_length =
+				GetEnvironmentVariableA("OPENTS_OVERLAY_WATCH_CELL", watch_cell, sizeof(watch_cell));
+		if (watch_cell_length > 0 && watch_cell_length < sizeof(watch_cell)
+					&& sscanf(watch_cell, "%d,%d", &x, &y) == 2
+					&& x >= 0 && x < MAP_CELL_W && y >= 0 && y < MAP_CELL_H) {
+			CellClass & cell = Map[Cell(x, y)];
+			DebugString("Overlay watchpoint cell=(%d,%d) address=%p value=%d armed=%s\n",
+						x, y, static_cast<void *>(&cell.Overlay), (int)cell.Overlay,
+						Exception_Arm_Data_Write_Watch(&cell.Overlay, OVERLAY_NONE, OVERLAY_COUNT)
+								? "yes" : "no");
+		}
+	}
+#endif
 
 	InMainLoop = true;
 

@@ -87,6 +87,64 @@
 static CRITICAL_SECTION DbgHelpLock;
 static bool DbgHelpLockReady = false;
 
+#ifdef _DEBUG
+static std::atomic<bool> DiagnosticDataWatchArmed = false;
+static std::atomic<int const *> DiagnosticDataWatchAddress = NULL;
+static int DiagnosticDataWatchMinimum = 0;
+static int DiagnosticDataWatchMaximum = 0;
+
+struct DataWatchRequest
+{
+	HANDLE Thread;
+	void const * Address;
+	bool Armed;
+};
+
+
+static DWORD WINAPI Arm_Data_Write_Watch(LPVOID parameter)
+{
+	DataWatchRequest * const request = static_cast<DataWatchRequest *>(parameter);
+	if (SuspendThread(request->Thread) == (DWORD)-1) {
+		return(0);
+	}
+
+	CONTEXT context = {};
+	context.ContextFlags = CONTEXT_DEBUG_REGISTERS;
+	if (GetThreadContext(request->Thread, &context)) {
+		context.Dr0 = (DWORD_PTR)request->Address;
+		context.Dr7 = (context.Dr7 & ~0x000F0003) | 0x000D0001;
+		request->Armed = SetThreadContext(request->Thread, &context) != FALSE;
+	}
+
+	ResumeThread(request->Thread);
+	return(0);
+}
+
+
+bool Exception_Arm_Data_Write_Watch(void const * address, int minimum, int maximum)
+{
+	HANDLE const target = OpenThread(THREAD_SUSPEND_RESUME | THREAD_GET_CONTEXT | THREAD_SET_CONTEXT,
+					FALSE, GetCurrentThreadId());
+	if (target == NULL) {
+		return(false);
+	}
+
+	DataWatchRequest request = { target, address, false };
+	HANDLE const helper = CreateThread(NULL, 0, Arm_Data_Write_Watch, &request, 0, NULL);
+	if (helper != NULL) {
+		WaitForSingleObject(helper, INFINITE);
+		CloseHandle(helper);
+	}
+
+	CloseHandle(target);
+	DiagnosticDataWatchAddress.store(static_cast<int const *>(address));
+	DiagnosticDataWatchMinimum = minimum;
+	DiagnosticDataWatchMaximum = maximum;
+	DiagnosticDataWatchArmed.store(request.Armed);
+	return(request.Armed);
+}
+#endif
+
 // The symbol handler is prepared during installation rather than on demand, so that a crash
 // never has to take the loader lock. Until that finishes the filter has to report without it,
 // including when the fault happened inside the preparation itself.
@@ -1458,7 +1516,25 @@ static LONG CALLBACK Exception_Filter(EXCEPTION_POINTERS * e_info)
 
 	// None of these is a crash. Letting one take the gate below would leave the handler spent
 	// for the fault that matters.
-	if (code == EXCEPTION_BREAKPOINT || code == EXCEPTION_SINGLE_STEP || code == MS_VC_THREAD_NAME_EXCEPTION) {
+	bool const diagnostic_single_step =
+#ifdef _DEBUG
+			code == EXCEPTION_SINGLE_STEP && DiagnosticDataWatchArmed.load();
+#else
+			false;
+#endif
+
+#ifdef _DEBUG
+	if (diagnostic_single_step) {
+		int const value = *DiagnosticDataWatchAddress.load();
+		if (value >= DiagnosticDataWatchMinimum && value < DiagnosticDataWatchMaximum) {
+			e_info->ContextRecord->Dr6 = 0;
+			return(EXCEPTION_CONTINUE_EXECUTION);
+		}
+	}
+#endif
+
+	if (code == EXCEPTION_BREAKPOINT || (code == EXCEPTION_SINGLE_STEP && !diagnostic_single_step)
+			|| code == MS_VC_THREAD_NAME_EXCEPTION) {
 		return(EXCEPTION_CONTINUE_SEARCH);
 	}
 

@@ -50,6 +50,10 @@
 void Install_Exception_Handler(void);
 void Exception_Register_Log_File(char const * path);
 
+#ifdef _DEBUG
+bool Exception_Arm_Data_Write_Watch(void const * address, int minimum, int maximum);
+#endif
+
 void Exception_Set_Test_Mode(char const * mode);
 void Exception_Run_Immediate_Test(void);
 void Exception_Run_Post_Window_Test(void);
