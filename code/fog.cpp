@@ -418,7 +418,7 @@ void Draw_Fogged_Objects(Rect const & rect)
 						if (cellptr->Drawer == NULL) {
 							cellptr->Init_Drawer(NULL, 0x10000, 0, NORMAL_LIGHT, NORMAL_LIGHT, NORMAL_LIGHT);
 						}
-						ConvertClass * drawconvert = type->IsTerrainPalette ? (ConvertClass *)cellptr->Drawer : (ConvertClass *)cellptr;
+						ConvertClass * drawconvert = type->IsTerrainPalette ? cellptr->Drawer : converter;
 
 						if (shapeclip.Height > 0) {
 							if (heightadjust) {
