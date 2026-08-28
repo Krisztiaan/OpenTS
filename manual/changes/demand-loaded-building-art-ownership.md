@@ -13,6 +13,7 @@ targets:
 - type: key
   id: FreeBuildup
   effect: changed
+credit: [Krisztiaan]
 ---
 
 A structure type with `DemandLoad=yes` now detaches the archive-owned shape found before
