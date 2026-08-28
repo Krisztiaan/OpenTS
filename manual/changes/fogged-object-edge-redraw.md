@@ -2,6 +2,7 @@
 title: Keep fogged object redraws inside safe bounds
 category: fix
 release: 0.1.0
+credit: [Krisztiaan]
 targets:
 - type: system
   id: map-visibility
