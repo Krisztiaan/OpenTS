@@ -501,8 +501,10 @@ void ScrollClass::Scroll_Edge(Point2D const & point)
 					**	If the mouse button is pressed or auto scrolling is active, then scroll
 					**	the map if the delay counter indicates.
 					*/
-					distance = int(_rate[rate] * Rule->ScrollMultiplier);
-					Scroll_Map(facing, distance, true);
+					if (Counter == 0) {
+						distance = int(_rate[rate] * Rule->ScrollMultiplier);
+						Scroll_Map(facing, distance, true);
+					}
 
 					if (Counter == 0 && player_scrolled) {
 						Counter = SCROLL_DELAY;
