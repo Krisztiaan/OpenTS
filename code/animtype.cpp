@@ -366,6 +366,10 @@ AnimType AnimTypeClass::From_Name(char const * name)
 /// <returns>bool; Was the animation type's data read?</returns>
 bool AnimTypeClass::Read_INI(CCINIClass const & ini)
 {
+	if (!ini.Section_Present(IniName)) {
+		return(false);
+	}
+
 	if (IsDemandLoad && ImageData != NULL) {
 		Free_Demand_Loaded_Shape(ImageData);
 	}

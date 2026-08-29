@@ -24,11 +24,11 @@ targets:
 credit: [Krisztiaan, ZivDero]
 ---
 
-A structure type with `DemandLoad=yes` now detaches the archive-owned shape found before
-that setting is read. The type loads its own copy when the shape is first needed and
-releases only that copy when the theater changes or the type is destroyed. A theater-aware
-structure previously tried to release the archive's shared memory during theater setup,
-which could stop a skirmish before play began.
+A structure type with `DemandLoad=yes` now detaches the archive-owned shape found while
+reading its rules or restoring a saved game. The type loads its own copy when the shape is
+first needed and releases only that copy. A theater-aware structure previously tried to
+release the archive's shared memory during theater setup, which could stop a skirmish before
+play began.
 
 Demand-loaded structure shapes and construction animations are now released as the byte
 arrays that the file loader allocated. Their former scalar release did not match that
@@ -37,7 +37,9 @@ shutdown.
 
 `FreeBuildup=yes` now releases construction artwork only when `DemandLoadBuildup=yes` gave
 the structure type its own copy. On its own the setting leaves archive-owned artwork in
-place instead of freeing shared memory and leaving later construction animations empty.
+place instead of freeing shared memory. Later structures retain their construction and
+deconstruction animation and sellability, and their nominal crew become technicians when
+the structure is destroyed.
 
 Demand-loaded animations and overlays now detach their archive-owned shapes after reading
 their settings and after restoring a saved game. They release only the separate copies

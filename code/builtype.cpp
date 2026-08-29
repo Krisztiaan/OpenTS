@@ -1134,6 +1134,10 @@ bool BuildingTypeClass::Read_INI(CCINIClass const & ini)
 {
 	char buffer[128];
 
+	if (!ini.Section_Present(IniName)) {
+		return(false);
+	}
+
 	if (IsDemandLoad && ImageData != NULL) {
 		Free_Demand_Loaded_Shape(ImageData);
 	}
@@ -1279,6 +1283,9 @@ bool BuildingTypeClass::Read_INI(CCINIClass const & ini)
 		IsFreeBuildup = ArtINI.Get_Bool(Graphic_Name(), "FreeBuildup", IsFreeBuildup);
 		if (IsDemandLoad) {
 			ImageData = NULL;
+		}
+		if (IsDemandLoadBuildup) {
+			BuildupData = NULL;
 		}
 
 		OccupyList = OccupyLists[Size];
@@ -1735,7 +1742,9 @@ void BuildingTypeClass::Post_Load(void)
 	BASECLASS::Post_Load();
 
 	Fetch_Building_Voxel_Image();
-	if (!IsDemandLoad) {
+	if (IsDemandLoad) {
+		ImageData = NULL;
+	} else {
 		Fetch_Normal_Image();
 	}
 

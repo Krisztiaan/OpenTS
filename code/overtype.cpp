@@ -329,6 +329,10 @@ bool OverlayTypeClass::Read_INI(CCINIClass const & ini)
 {
 	char fullname[_MAX_FNAME+_MAX_EXT];
 
+	if (!ini.Section_Present(IniName)) {
+		return(false);
+	}
+
 	if (DemandLoad && ImageData != NULL) {
 		Free_Demand_Loaded_Shape(ImageData);
 	}
