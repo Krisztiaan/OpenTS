@@ -98,6 +98,9 @@ void const * BuildingTypeClass::WrenchShapes;
 
 BSurface * CloakingSurface;
 
+/// <summary>
+/// Releases shape data that this type loaded through the file layer.
+/// </summary>
 static void Free_Demand_Loaded_Shape(void const *& data)
 {
 	delete [] (char *)data;
