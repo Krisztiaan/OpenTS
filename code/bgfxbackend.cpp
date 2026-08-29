@@ -297,6 +297,9 @@ bool Backend_Init(NativeWindow const & window, int drawablewidth, int drawablehe
 	bgfx::Init init;
 	init.platformData.ndt = window.Display;
 	init.platformData.nwh = window.Handle;
+	init.platformData.type = window.Type == NATIVE_WINDOW_WAYLAND
+		? bgfx::NativeWindowHandleType::Wayland
+		: bgfx::NativeWindowHandleType::Default;
 	init.resolution.width = (uint32_t)drawablewidth;
 	init.resolution.height = (uint32_t)drawableheight;
 	init.resolution.reset = _ResetFlags;

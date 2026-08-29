@@ -195,9 +195,8 @@ void Video_Shutdown(void)
 /// </summary>
 /// <param name="width">The new frame width.</param>
 /// <param name="height">The new frame height.</param>
-/// <param name="refreshrate">The display refresh rate in hertz, or zero when unknown.</param>
 /// <returns>bool; Was the mode changed?</returns>
-bool Video_Set_Mode(int width, int height, int refreshrate)
+bool Video_Set_Mode(int width, int height)
 {
 	if (!_Initialized || width <= 0 || height <= 0) {
 		return(false);
@@ -211,7 +210,6 @@ bool Video_Set_Mode(int width, int height, int refreshrate)
 	VideoModeHeight = height;
 
 	Update_Scale_Info();
-	Update_Present_Interval(refreshrate);
 	Win_Cursor_Refresh();
 	_FrameIsDirty = true;
 	return(true);
@@ -219,9 +217,9 @@ bool Video_Set_Mode(int width, int height, int refreshrate)
 
 
 /// <summary>
-/// Tells the presenter the drawable area or display timing changed.
+/// Tells the presenter the drawable area changed size.
 /// </summary>
-void Video_On_Resize(int drawablewidth, int drawableheight, int refreshrate)
+void Video_On_Resize(int drawablewidth, int drawableheight)
 {
 	if (!_Initialized || drawablewidth <= 0 || drawableheight <= 0) {
 		return;
@@ -231,7 +229,6 @@ void Video_On_Resize(int drawablewidth, int drawableheight, int refreshrate)
 	_ScaleInfo.DrawableHeight = drawableheight;
 	Backend_On_Resize(drawablewidth, drawableheight);
 	Update_Scale_Info();
-	Update_Present_Interval(refreshrate);
 	Win_Cursor_Refresh();
 	Video_Mark_Dirty();
 }

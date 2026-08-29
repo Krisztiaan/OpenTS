@@ -274,7 +274,8 @@ LRESULT CALLBACK /*_export*/ Windows_Procedure(HWND hwnd, UINT message, UINT wPa
 
 		case WM_SIZE:
 			if (wParam != SIZE_MINIMIZED) {
-				Video_On_Resize(LOWORD(lParam), HIWORD(lParam), Win_Window_Refresh_Rate(hwnd));
+				Video_On_Resize(LOWORD(lParam), HIWORD(lParam));
+				Video_On_Display_Change(Win_Window_Refresh_Rate(hwnd));
 				if (MouseCursor != NULL) {
 					((WWMouseClass *)MouseCursor)->Calc_Confining_Rect();
 				}
@@ -396,7 +397,7 @@ LRESULT CALLBACK /*_export*/ Windows_Procedure(HWND hwnd, UINT message, UINT wPa
 
 NativeWindow Win_Native_Window(HWND window)
 {
-	return(NativeWindow{ nullptr, window });
+	return(NativeWindow{ NATIVE_WINDOW_DEFAULT, nullptr, window });
 }
 
 

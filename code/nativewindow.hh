@@ -10,10 +10,18 @@
 #pragma once
 
 
+enum NativeWindowType
+{
+	NATIVE_WINDOW_DEFAULT,
+	NATIVE_WINDOW_WAYLAND,
+};
+
+
 // The native handles bgfx needs to present into a window supplied by the application shell.
 // Display is unused on platforms where the window identifies its display by itself.
 struct NativeWindow
 {
+	NativeWindowType Type;
 	void * Display;
 	void * Handle;
 };
