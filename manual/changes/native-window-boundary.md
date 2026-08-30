@@ -1,7 +1,7 @@
 ---
 title: Separate native window handling from video presentation
 category: internal
-release: 0.1.0
+release: 0.2.0
 targets: []
 credit: [Krisztiaan]
 ---
