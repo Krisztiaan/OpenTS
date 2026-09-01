@@ -8,8 +8,8 @@ when_omitted:
   value: "no"
 ---
 
-A structure's shape is first found in the archives under its [Image ID](/keys/image/), before this setting has been read. With the flag set, the structure type detaches that archive-owned shape without releasing it, records the [main-shape basename](/keys/image/#scope-buildingtype) for the current theater, and leaves its own shape empty.
+A structure's shape is found in the archives under its [Image ID](/keys/image/) before this flag is read. The flag detaches that archive pointer, records the theater-resolved [main-shape basename](/keys/image/#scope-buildingtype), and leaves the type empty until its first draw loads a private copy.
 
-The shape is read from disk the first time something asks to draw a structure of the type. It is released when that type's rules section is read again, when theater setup revisits a `Theater=yes` or `NewTheater=yes` type, or when the type is destroyed. A type nothing ever draws allocates nothing, and a structure whose shape cannot be found is not drawn at all.
+The copy is released when the type's rules are reread, the type is destroyed, or theater setup revisits a `Theater=yes` or `NewTheater=yes` type. Unused types allocate nothing; a missing shape is not drawn.
 
 The construction animation is a separate setting, [`DemandLoadBuildup`](/keys/demandloadbuildup/). The deploying, door, under-door, bib and Z-shape overlay artwork is fetched with the rules whatever this is set to.

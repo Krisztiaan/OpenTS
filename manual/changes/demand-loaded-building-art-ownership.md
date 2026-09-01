@@ -24,27 +24,16 @@ targets:
 credit: [Krisztiaan, ZivDero]
 ---
 
-A structure type with `DemandLoad=yes` now detaches the archive-owned shape found while
-reading its rules or restoring a saved game. The type loads its own copy when the shape is
-first needed and releases only that copy. A theater-aware structure previously tried to
-release the archive's shared memory during theater setup, which could stop a skirmish before
-play began.
+A structure with `DemandLoad=yes` now detaches archive-owned art after rules or save loading,
+then loads and releases its own copy on demand. Structure and construction shapes are also
+released as the byte arrays the file loader allocated. The previous code could free shared
+archive memory or use a mismatched scalar release, corrupting the heap during theater setup,
+construction-art cleanup or shutdown.
 
-Demand-loaded structure shapes and construction animations are now released as the byte
-arrays that the file loader allocated. Their former scalar release did not match that
-allocation and could corrupt the heap during theater changes, construction-art cleanup or
-shutdown.
+`FreeBuildup=yes` now releases construction art only with `DemandLoadBuildup=yes`. Used alone,
+it leaves archive art attached, so later structures retain construction, deconstruction,
+sellability and technician conversion for nominal crew on destruction.
 
-`FreeBuildup=yes` now releases construction artwork only when `DemandLoadBuildup=yes` gave
-the structure type its own copy. On its own the setting leaves archive-owned artwork in
-place instead of freeing shared memory. Later structures retain their construction and
-deconstruction animation and sellability, and their nominal crew become technicians when
-the structure is destroyed.
-
-Demand-loaded animations and overlays now detach their archive-owned shapes after reading
-their settings and after restoring a saved game. They release only the separate copies
-loaded when first drawn, rather than handing archive memory back during theater changes or
-shutdown.
-
-An ordinary demand-loaded overlay now builds its deferred filename from its Image ID. Its
-first draw loads the `.SHP` instead of reading through an uninitialized filename.
+Demand-loaded animations and overlays likewise detach archive shapes after settings or save
+loading and release only their on-demand copies. Ordinary overlays now build the deferred
+`.SHP` filename from their Image ID instead of an uninitialized buffer.

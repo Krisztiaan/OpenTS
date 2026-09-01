@@ -8,8 +8,8 @@ when_omitted:
   value: "no"
 ---
 
-The flag is read after the overlay's shape has already been found in the archives under its [Image ID](/keys/image/). With the flag set, the overlay type detaches that archive-owned shape without releasing it and leaves its own shape empty. Restoring a saved game also leaves the shape empty rather than attaching the archive's copy.
+The flag detaches the archive shape already found under the overlay's [Image ID](/keys/image/), both after settings and save loading. The first draw loads a private copy.
 
-An overlay that reaches a draw with no shape reads one from disk at that moment. An ordinary overlay uses its Image ID with a `.SHP` extension, a [`Theater=yes`](/keys/theater/) overlay uses the theater's extension, and a [`NewTheater=yes`](/keys/newtheater/) overlay rewrites the ordinary name for the current theater.
+An ordinary overlay loads its Image ID with a `.SHP` extension; [`Theater=yes`](/keys/theater/) uses the theater extension, while [`NewTheater=yes`](/keys/newtheater/) rewrites the ordinary name for the theater.
 
-The separately loaded shape is held until the type is destroyed. A theater-aware overlay also releases it when the theater changes so the next draw loads the matching copy.
+The copy is released with the type and, for theater-aware overlays, on theater changes.
